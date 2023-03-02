@@ -36,7 +36,3 @@ class VideoFile(VideoSource):
         if not ret:
             raise Exception
         return img
-
-
-class TisCamera(VideoSource):
-    pass
