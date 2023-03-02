@@ -1,0 +1,9 @@
+opencv-python
+fastapi
+Jinja2
+uvicorn
+
+# dev
+black
+flake8
+isort
