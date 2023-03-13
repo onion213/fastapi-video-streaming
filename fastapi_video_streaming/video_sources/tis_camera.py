@@ -101,9 +101,15 @@ class TisCamera(VideoSource):
             ].read()
             time.sleep(1 / 1000)
 
-    def __init__(self, image_provider_key: str, config: dict) -> None:
+    def __init__(
+        self, image_provider_key: str, width: int, jpeg_quality: int, config: dict
+    ) -> None:
         image_provider_key = "cam1"
-        super().__init__(image_provider_key=image_provider_key)
+        super().__init__(
+            image_provider_key=image_provider_key,
+            width=width,
+            jpeg_quality=jpeg_quality,
+        )
         if image_provider_key not in TisCamera.captures.keys():
             TisCamera.captures[image_provider_key] = TisCameraCapture(
                 image_provider_key=image_provider_key, config=config
