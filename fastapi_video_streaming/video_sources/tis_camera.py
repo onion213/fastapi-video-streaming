@@ -124,4 +124,8 @@ class TisCamera(VideoSource):
             TisCamera.capture_processes[image_provider_key].start()
 
     def get_frame(self):
-        return TisCamera.latest_frames[self.image_provider_key]
+        frame = None
+        while frame is None:
+            time.sleep(1 / 1000)
+            frame = TisCamera.capture_processes[self.image_provider_key]["latest_frame"]
+        return frame
