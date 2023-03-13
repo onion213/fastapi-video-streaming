@@ -92,12 +92,11 @@ class TisCameraCapture:
 class TisCamera(VideoSource):
     captures = {}
     capture_processes = {}
-    latest_frames = {}
 
     @classmethod
     def capture(cls, image_provider_key):
         while True:
-            cls.latest_frames[image_provider_key] = cls.captures[
+            cls.capture_processes[image_provider_key]["latest_frame"] = cls.captures[
                 image_provider_key
             ].read()
             time.sleep(1 / 1000)
@@ -110,9 +109,12 @@ class TisCamera(VideoSource):
                 image_provider_key=image_provider_key, config=config
             )
         if image_provider_key not in TisCamera.capture_processes.keys():
-            TisCamera.capture_processes[image_provider_key] = multiprocessing.Process(
-                target=TisCamera.capture, args=(image_provider_key,)
-            )
+            TisCamera.capture_processes[image_provider_key] = {
+                "process": multiprocessing.Process(
+                    target=TisCamera.capture, args=(image_provider_key,)
+                ),
+                "latest_frame": None,
+            }
             TisCamera.capture_processes[image_provider_key].start()
 
     def get_frame(self):
