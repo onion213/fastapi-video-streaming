@@ -9,7 +9,7 @@ from fastapi_video_streaming.video_sources.tis_camera import TisCameraCapture
 from fastapi_video_streaming.video_sources.video_file import Mp4File
 
 
-class CaptureFactry:
+class CaptureFactory:
     @classmethod
     def create_capture(profile) -> BaseCapture:
         if "model" not in profile.keys():
@@ -24,7 +24,7 @@ class CaptureFactry:
 
 
 def start_capture(profile: dict, latest_frame_dict: DictProxy):
-    cap = CaptureFactry.create_capture(profile=profile)
+    cap = CaptureFactory.create_capture(profile=profile)
     while True:
         latest_frame_dict[profile["image_provider_key"]] = cap.read()
         time.sleep(1 / 1000)
@@ -40,16 +40,15 @@ class VideoSource:
 
     def __init__(
         self,
-        image_provider_key: str,
         profile: dict,
         width: int = 720,
         jpeg_quality: int = 85,
     ) -> None:
-        self.image_provider_key = image_provider_key
+        self.image_provider_key = profile["image_provider_key"]
         self.stream_width = width
         self.jpeg_quality = jpeg_quality
-        if image_provider_key not in VideoSource.latest_frame_dict.keys():
-            VideoSource.latest_frame_dict[image_provider_key] = None
+        if self.image_provider_key not in VideoSource.latest_frame_dict.keys():
+            VideoSource.latest_frame_dict[self.image_provider_key] = None
             p = multiprocessing.Process(
                 target=start_capture,
                 args=(profile, VideoSource.latest_frame_dict),

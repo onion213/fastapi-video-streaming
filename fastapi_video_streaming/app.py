@@ -3,7 +3,7 @@ import enum
 import fastapi
 import fastapi.templating as templating
 
-from fastapi_video_streaming.video_sources import VideoSourceFactory
+from fastapi_video_streaming.video_sources import VideoSource
 
 
 def create_app(camera_profiles: dict, allowed_widths: list = (360, 720)):
@@ -19,6 +19,7 @@ def create_app(camera_profiles: dict, allowed_widths: list = (360, 720)):
     templates = templating.Jinja2Templates(
         directory="fastapi_video_streaming/templates"
     )
+    profiles_dict = {p["image_provider_key"]: p for p in camera_profiles.values()}
 
     @app.get("/")
     async def read_root(
@@ -35,10 +36,15 @@ def create_app(camera_profiles: dict, allowed_widths: list = (360, 720)):
             },
         )
 
-    @app.get("/video_stream/{image_provider_key}/{width}")
-    async def stream(image_provider_key: ImageProviderKeys, width: AllowedWidths = 720):
-        video_source = VideoSourceFactory.create_camera(
-            image_provider_key=image_provider_key, width=width
+    @app.get("/video_stream/{image_provider_key}")
+    async def stream(
+        image_provider_key: ImageProviderKeys,
+        width: AllowedWidths = 720,
+        jpeg_quality: int = 85,
+    ):
+        profile = profiles_dict[image_provider_key]
+        video_source = VideoSource(
+            profile=profile, width=width, jpeg_quality=jpeg_quality
         )
         return fastapi.responses.StreamingResponse(
             video_source.stream(),
