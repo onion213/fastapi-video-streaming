@@ -1,5 +1,6 @@
 import ctypes
 import multiprocessing
+from multiprocessing.managers import DictProxy
 import os
 import time
 
@@ -91,7 +92,7 @@ class TisCameraCapture:
 
 def start_capture(
     config: dict,
-    latest_frame_dict: multiprocessing.managers.DictProxy,
+    latest_frame_dict: DictProxy,
     image_provider_key: str,
 ):
     cap = TisCameraCapture(config=config)
@@ -102,14 +103,6 @@ def start_capture(
 
 class TisCamera(VideoSource):
     latest_frame_dict = multiprocessing.Manager().dict()
-
-    @classmethod
-    def capture(cls, image_provider_key):
-        while True:
-            TisCamera.capture_processes[image_provider_key][
-                "latest_frame"
-            ] = TisCamera.captures[image_provider_key].read()
-            time.sleep(1 / 1000)
 
     def __init__(
         self, image_provider_key: str, width: int, jpeg_quality: int, config: dict
@@ -132,5 +125,5 @@ class TisCamera(VideoSource):
         frame = None
         while frame is None:
             time.sleep(1 / 1000)
-            frame = TisCamera.capture_processes[self.image_provider_key]["latest_frame"]
+            frame = TisCamera.latest_frame_dict[self.image_provider_key]
         return frame
