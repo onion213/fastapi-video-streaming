@@ -107,6 +107,9 @@ class TisCamera(VideoSource):
     def __init__(
         self, image_provider_key: str, width: int, jpeg_quality: int, config: dict
     ) -> None:
+        print("staring tis_camera")
+        print("existing cameras: ", TisCamera.latest_frame_dict.keys())
+
         image_provider_key = "cam1"
         super().__init__(
             image_provider_key=image_provider_key,
