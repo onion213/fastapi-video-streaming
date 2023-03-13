@@ -6,7 +6,8 @@ from fastapi_video_streaming.video_sources.tis_camera import TisCamera
 
 
 class VideoSourceFactory:
-    def __init__(self, image_provider_key: str, **kwargs) -> VideoSource:
+    @classmethod
+    def create_camera(self, image_provider_key: str, **kwargs) -> VideoSource:
         if image_provider_key[:3] == "video":
             return VideoFile(image_provider_key=image_provider_key)
         if image_provider_key[:3] == "cam":
