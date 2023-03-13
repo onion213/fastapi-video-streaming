@@ -2,6 +2,7 @@ opencv-python
 fastapi
 Jinja2
 uvicorn
+pyyaml
 
 # dev
 black

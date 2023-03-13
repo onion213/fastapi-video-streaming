@@ -2,17 +2,24 @@
 Very simple video streaming with FastAPI.
 
 # Usage
-1. Prepare any mp4 videos and save them in `fastapi_video_streaming/videos/`.
-2. Modify `src` of `img` tags in `fastapi_video_streaming/templates/index.html` according to the video names.
+1. Prepare any VideoSource (TIS Camera or MP4 File)
+    - TIS Camera
+        connect camera to server
+    - MP4 File
+        save files in local storage
+2. Create camera profile file.
+    
+    imitate to `camera_profiles_sample.yaml`.
+
 3. Create venv
     ```
     $ python -m venv .venv
     $ source ./.venv/bin/activate
     $ pip install -r requirements.txt
     ```
-4. Start service with `uvicorn`.
+4. Start service
     ```
-    $ uvicorn fastapi_video_streaming.app:app --reload
+    $ python fastapi_video_streaming -c 
     ```
 5. Access `http://localhost:8000/` via browser.
 6. To see smaller/bigger images, use query parameters.
