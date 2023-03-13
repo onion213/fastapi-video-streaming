@@ -10,8 +10,7 @@ class VideoSource:
         self, image_provider_key: str, width: int = 720, jpeg_quality: int = 85
     ) -> None:
         self.image_provider_key = image_provider_key
-        original_height, original_width = self.get_frame_size()
-        self.stream_dsize = (width, round(original_height * (width / original_width)))
+        self.stream_width = width
         self.jpeg_quality = jpeg_quality
 
     def get_frame(self):
@@ -22,9 +21,14 @@ class VideoSource:
         return frame.shape[:2]
 
     def stream(self):
+        original_height, original_width = self.get_frame_size()
+        stream_dsize = (
+            self.stream_width,
+            round(original_height * (self.stream_width / original_width)),
+        )
         while True:
             frame = self.get_frame()
-            frame = cv2.resize(frame, dsize=self.stream_dsize)
+            frame = cv2.resize(frame, dsize=stream_dsize)
             ret, encoded_frame = cv2.imencode(
                 ".jpg", frame, (cv2.IMWRITE_JPEG_QUALITY, self.jpeg_quality)
             )
