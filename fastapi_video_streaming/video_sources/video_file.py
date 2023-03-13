@@ -1,6 +1,6 @@
 import cv2
 
-from fastapi_video_streaming.video_sources.video_source import BaseCapture
+from fastapi_video_streaming.video_sources.base_capture import BaseCapture
 
 
 class Mp4File(BaseCapture):

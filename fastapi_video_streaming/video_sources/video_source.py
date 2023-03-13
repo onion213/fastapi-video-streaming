@@ -4,16 +4,9 @@ import time
 
 import cv2
 
+from fastapi_video_streaming.video_sources.base_capture import BaseCapture
 from fastapi_video_streaming.video_sources.tis_camera import TisCameraCapture
 from fastapi_video_streaming.video_sources.video_file import Mp4File
-
-
-class BaseCapture:
-    def __init__(self, profile: dict):
-        pass
-
-    def read(self):
-        raise NotImplementedError
 
 
 class CaptureFactry:

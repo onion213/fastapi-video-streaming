@@ -6,7 +6,7 @@ import time
 import numpy as np
 
 from fastapi_video_streaming.video_sources.tisgrabber import tisgrabber as tis
-from fastapi_video_streaming.video_sources.video_source import BaseCapture
+from fastapi_video_streaming.video_sources.base_capture import BaseCapture
 
 
 class TisCameraCapture(BaseCapture):
