@@ -18,7 +18,8 @@ class VideoSource:
         raise NotImplementedError
 
     def get_frame_size(self):
-        raise NotImplementedError
+        frame = self.get_frame()
+        return frame.shape[:2]
 
     def stream(self):
         while True:
