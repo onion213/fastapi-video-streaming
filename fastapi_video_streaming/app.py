@@ -6,7 +6,7 @@ import fastapi.templating as templating
 from fastapi_video_streaming.video_sources import VideoSource
 
 
-def create_app(camera_profiles: dict, allowed_widths: list = (360, 720)):
+def create_app(camera_profiles: dict, allowed_widths: list = [360, 720]):
     ImageProviderKeys = enum.Enum(
         "ImageProviderKeys",
         {
@@ -14,7 +14,7 @@ def create_app(camera_profiles: dict, allowed_widths: list = (360, 720)):
             for p in camera_profiles.values()
         },
     )
-    AllowedWidths = enum.Enum("AllowedWidths", {w: w for w in allowed_widths})
+    AllowedWidths = enum.Enum("AllowedWidths", {str(w): w for w in allowed_widths})
     app = fastapi.FastAPI()
     templates = templating.Jinja2Templates(
         directory="fastapi_video_streaming/templates"
@@ -23,26 +23,25 @@ def create_app(camera_profiles: dict, allowed_widths: list = (360, 720)):
 
     @app.get("/")
     async def read_root(
-        request: fastapi.Request,
-        width: int = 720,
-        image_provider_keys: list[str] = ["cam1"],
+        request: fastapi.Request, width: int = 720, jpeg_quality: int = 85
     ):
         return templates.TemplateResponse(
             "index.html",
             context={
                 "request": request,
                 "width": width,
-                "image_provider_keys": image_provider_keys,
+                "image_provider_keys": profiles_dict.keys(),
+                "jpeg_quality": jpeg_quality,
             },
         )
 
-    @app.get("/video_stream/{image_provider_key}")
+    @app.get("/video_stream/{image_provider_key}/{width}/{jpeg_quality}")
     async def stream(
         image_provider_key: ImageProviderKeys,
-        width: AllowedWidths = 720,
+        width: int = 720,
         jpeg_quality: int = 85,
     ):
-        profile = profiles_dict[image_provider_key]
+        profile = profiles_dict[image_provider_key.value]
         video_source = VideoSource(
             profile=profile, width=width, jpeg_quality=jpeg_quality
         )

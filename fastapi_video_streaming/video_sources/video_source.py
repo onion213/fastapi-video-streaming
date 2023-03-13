@@ -11,7 +11,7 @@ from fastapi_video_streaming.video_sources.video_file import Mp4File
 
 class CaptureFactory:
     @classmethod
-    def create_capture(profile) -> BaseCapture:
+    def create_capture(cls, profile) -> BaseCapture:
         if "model" not in profile.keys():
             raise ValueError(f"`model` is required for camera profile")
 
@@ -27,14 +27,14 @@ def start_capture(profile: dict, latest_frame_dict: DictProxy):
     cap = CaptureFactory.create_capture(profile=profile)
     while True:
         latest_frame_dict[profile["image_provider_key"]] = cap.read()
-        time.sleep(1 / 1000)
+        time.sleep(1 / 10)
 
 
 class VideoSource:
     latest_frame_dict = None
 
     @classmethod
-    def set_latest_frame_dict(cls, ipk: str):
+    def set_latest_frame_dict(cls):
         if cls.latest_frame_dict is None:
             cls.latest_frame_dict = multiprocessing.Manager().dict()
 
@@ -44,6 +44,7 @@ class VideoSource:
         width: int = 720,
         jpeg_quality: int = 85,
     ) -> None:
+        self.set_latest_frame_dict()
         self.image_provider_key = profile["image_provider_key"]
         self.stream_width = width
         self.jpeg_quality = jpeg_quality

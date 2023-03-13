@@ -7,7 +7,7 @@
 
 <body>
     {% for image_provider_key in image_provider_keys %}
-    <img src="{{ url_for('stream', image_provider_key=image_provider_key, width=width) }}">
+    <img src="{{ url_for('stream', image_provider_key=image_provider_key, width=width, jpeg_quality=jpeg_quality) }}">
     {% endfor %}
 </body>
 
