@@ -1,7 +1,6 @@
 import ctypes
 import multiprocessing
 import os
-import threading
 import time
 
 
@@ -22,10 +21,8 @@ class TisCameraCapture:
         self.ic = ctypes.cdll.LoadLibrary(tisgrabber_path)
         tis.declareFunctions(self.ic)
         self.ic.IC_InitLibrary(0)
-        if os.path.exists(self.config_file):
-            self.hGrabber = self.ic.IC_LoadDeviceStateFromFile(
-                None, tis.T(self.config_file)
-            )
+        if os.path.exists(config_file):
+            self.hGrabber = self.ic.IC_LoadDeviceStateFromFile(None, tis.T(config_file))
         else:
             self.hGrabber = self.ic.IC_ShowDeviceSelectionDialog(None)
             # 指定のコンフィグファイルが存在しなかった場合は，GUIでの設定を強制する
@@ -41,9 +38,9 @@ class TisCameraCapture:
         if config["show_config_gui"]:
             self.ic.IC_StartLive(self.hGrabber, 1)
             self.ic.IC_ShowPropertyDialog(self.hGrabber)
-            self.ic.IC_SaveDeviceStateToFile(self.hGrabber, tis.T(self.config_file))
+            self.ic.IC_SaveDeviceStateToFile(self.hGrabber, tis.T(config_file))
             self.ic.IC_MsgBox(
-                tis.T("Configuration saved to {}".format(self.config_file)),
+                tis.T("Configuration saved to {}".format(config_file)),
                 tis.T("Simple Live Video"),
             )
             self.ic.IC_StopLive(self.hGrabber)
