@@ -26,9 +26,9 @@ async def read_root(
 @app.get("/video_stream/{image_provider_key}")
 async def stream(image_provider_key: str, width: int = 720):
     video_source = VideoSourceFactory.create_camera(
-        image_provider_key=image_provider_key
+        image_provider_key=image_provider_key, width=width
     )
     return fastapi.responses.StreamingResponse(
-        video_source.stream(width=width),
+        video_source.stream(),
         media_type="multipart/x-mixed-replace; boundary=frame",
     )
