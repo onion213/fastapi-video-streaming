@@ -121,7 +121,7 @@ class TisCamera(VideoSource):
                 ),
                 "latest_frame": None,
             }
-            TisCamera.capture_processes[image_provider_key].start()
+            TisCamera.capture_processes[image_provider_key]["process"].start()
 
     def get_frame(self):
         frame = None
