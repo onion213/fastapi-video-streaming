@@ -11,7 +11,7 @@ from fastapi_video_streaming.video_sources.video_source import VideoSource
 
 
 class TisCameraCapture:
-    def __init__(self, image_provider_key: str, config: dict):
+    def __init__(self, config: dict):
         config_file = config["device_config_file"]
         fps = config["fps"]
         self.waiting_time_ms = int(1 / fps * 2000)
@@ -89,16 +89,26 @@ class TisCameraCapture:
                 time.sleep(1 / 1000)
 
 
+def start_capture(
+    config: dict,
+    latest_frame_dict: multiprocessing.managers.DictProxy,
+    image_provider_key: str,
+):
+    cap = TisCameraCapture(config=config)
+    while True:
+        latest_frame_dict["latest_frame"] = cap[image_provider_key].read()
+        time.sleep(1 / 1000)
+
+
 class TisCamera(VideoSource):
-    captures = {}
-    capture_processes = {}
+    latest_frame_dict = multiprocessing.Manager().dict()
 
     @classmethod
     def capture(cls, image_provider_key):
         while True:
-            cls.capture_processes[image_provider_key]["latest_frame"] = cls.captures[
-                image_provider_key
-            ].read()
+            TisCamera.capture_processes[image_provider_key][
+                "latest_frame"
+            ] = TisCamera.captures[image_provider_key].read()
             time.sleep(1 / 1000)
 
     def __init__(
@@ -110,18 +120,13 @@ class TisCamera(VideoSource):
             width=width,
             jpeg_quality=jpeg_quality,
         )
-        if image_provider_key not in TisCamera.captures.keys():
-            TisCamera.captures[image_provider_key] = TisCameraCapture(
-                image_provider_key=image_provider_key, config=config
+        if image_provider_key not in TisCamera.latest_frame_dict.keys():
+            TisCamera.latest_frame_dict[image_provider_key] = None
+            p = multiprocessing.Process(
+                target=start_capture,
+                args=(config, TisCamera.latest_frame_dict, image_provider_key),
             )
-        if image_provider_key not in TisCamera.capture_processes.keys():
-            TisCamera.capture_processes[image_provider_key] = {
-                "process": multiprocessing.Process(
-                    target=TisCamera.capture, args=(image_provider_key,)
-                ),
-                "latest_frame": None,
-            }
-            TisCamera.capture_processes[image_provider_key]["process"].start()
+            p.start()
 
     def get_frame(self):
         frame = None
