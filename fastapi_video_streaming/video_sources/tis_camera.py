@@ -95,9 +95,9 @@ class TisCamera(VideoSource):
     latest_frames = {}
 
     @classmethod
-    def capture(image_provider_key):
+    def capture(cls, image_provider_key):
         while True:
-            TisCamera.latest_frames[image_provider_key] = TisCamera.captures[
+            cls.latest_frames[image_provider_key] = cls.captures[
                 image_provider_key
             ].read()
             time.sleep(1 / 1000)
