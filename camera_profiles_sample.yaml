@@ -1,0 +1,11 @@
+cam:
+  image_provider_key: cam
+  model: tis
+  device_config_file: ./fastapi_video_streaming/video_sources/tis_configs/device.xml
+  fps: 30
+  show_config_gui: false
+
+mp4:
+  image_provider_key: mp4
+  model: mp4
+  path: fastapi_video_streaming/videos/video.mp4
